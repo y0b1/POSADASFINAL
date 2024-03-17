@@ -68,7 +68,7 @@ def validate_shift_input(char):
 
 # Create Tkinter window
 root = tk.Tk()  # Create the main window
-root.title("Caesar Cipherinator")  # Set the window title
+root.title("Gaius Julius Caesar Cipherinator - PRO MAX ULTRA")  # Set the window title
 
 # Set window icon
 icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")  # Get the path to the icon file
@@ -89,4 +89,28 @@ shift_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)  # Position label in the
 
 # Validation for shift entry field
 validate_shift = root.register(validate_shift_input)  # Register validation function
-entry_shift = tk.Entry(root, width=10, validate="key", validatecommand=(validate_shift, "%S"))  # Create shift ent
+entry_shift = tk.Entry(root, width=10, validate="key", validatecommand=(validate_shift, "%S"))  # Create shift entry field
+entry_shift.place(relx=0.5, rely=0.5, anchor=tk.CENTER)  # Position shift entry field
+
+# Create buttons for encryption, decryption, reset, and copy
+encrypt_button = tk.Button(root, text="Encrypt", command=encrypt)  # Create Encrypt button
+encrypt_button.place(relx=0.35, rely=0.6, anchor=tk.CENTER)  # Position button
+
+decrypt_button = tk.Button(root, text="Decrypt", command=decrypt)  # Create Decrypt button
+decrypt_button.place(relx=0.5, rely=0.6, anchor=tk.CENTER)  # Position button
+
+reset_button = tk.Button(root, text="Reset", command=reset)  # Create Reset button
+reset_button.place(relx=0.65, rely=0.6, anchor=tk.CENTER)  # Position button
+
+copy_button = tk.Button(root, text="Copy Result", command=copy_result)  # Create Copy Result button
+copy_button.place(relx=0.5, rely=0.7, anchor=tk.CENTER)  # Position button
+
+# Label to display result
+result_label = tk.Label(root, text="")  # Create label for displaying result
+result_label.place(relx=0.5, rely=0.8, anchor=tk.CENTER)  # Position label in the middle
+
+# Label to display copy confirmation
+copy_label = tk.Label(root, text="")  # Create label for copy confirmation
+copy_label.place(relx=0.5, rely=0.9, anchor=tk.CENTER)  # Position label in the middle
+
+root.mainloop()  # Start the Tkinter event loop
