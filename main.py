@@ -1,147 +1,155 @@
-import tkinter as tk
-from tkinter import messagebox  # Import messagebox module
-import os
+import tkinter as tk  #mainwindow
+from tkinter import messagebox  #errorbox
+import os  #filehandling
 
-def read_password_from_file():
+# The code doesn't use classes because it's simple and functions adequately without them.
+
+def readpassfromfile():
     """
     Function to read the password from the text file.
     """
     with open("password.txt", "r") as file:
-        return file.readline().strip()  # Read the password and remove leading/trailing whitespace
+        return file.readline().strip()  # The strip() helps you remove these whitespace characters.
 
 def authenticate():
     """
     Function to authenticate the user with a password.
     """
-    password = read_password_from_file()  # Read the password from the file
-    user_password = password_entry.get()  # Get the password entered by the user
-    if user_password == password:  # Check if the entered password matches the stored password
-        main_window()  # Call the main window function if authentication succeeds
+    password = readpassfromfile()  # Read password from file
+    user_password = passwordentry.get()  # Get password entered by user
+    if user_password == password:  # Check if entered password matches stored password
+        mainwindow()  # Call mainwin function if authentication succeeds
     else:
-        messagebox.showerror("Error", "Incorrect password!")  # Show error message if authentication fails
+        messagebox.showerror("Error", "Incorrect password!")  #errorbox
 
-def main_window():
+def mainwindow():
     """
     Function to create the main application window.
     """
-    global root
-    root = tk.Tk()
-    root.title("Gaius Julius Caesar Cipherinator - PRO MAX ULTRA")
-    icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")
-    root.iconbitmap(icon_path)
-    root.geometry("500x300")
+    global mainwin  # mainwin global var
+    mainwin = tk.Tk()  # new window
+    mainwin.title("Gaius Julius Caesar Cipherinator - PRO MAX ULTRA")
+#icon
+    iconpath = os.path.join(os.path.dirname(__file__), "icon.ico")
+    """os.path.dirname(__file__): os.path.dirname() returns the directory name of a path. 
+    __file__ is a special variable in Python that holds the path of the current script.
+    os.path.dirname(__file__) gives the directory containing the current script.
+    os.path.join(): This function joins one or more path components intelligently. It's used here to join the directory containing the current script with the filename."""
+    mainwin.iconbitmap(iconpath)  #seticon
+    mainwin.geometry("500x300") #windowsize
+#input fields
+    textlabel = tk.Label(mainwin, text="Enter text:")  # Create label for text entry
+    textlabel.place(relx=0.5, rely=0.2, anchor=tk.CENTER)  # Place text label in window
 
-    # Create input fields
-    text_label = tk.Label(root, text="Enter text:")
-    text_label.place(relx=0.5, rely=0.2, anchor=tk.CENTER)
+    global entrytext, entryshift, resultlabel  #entrytext, entryshift, and resultlabel as global variables
+    entrytext = tk.Entry(mainwin, width=50)  # Create entry widget for text input
+    entrytext.place(relx=0.5, rely=0.3, anchor=tk.CENTER)  # Place text entry widget in window
 
-    global entry_text, entry_shift, result_label
-    entry_text = tk.Entry(root, width=50)
-    entry_text.place(relx=0.5, rely=0.3, anchor=tk.CENTER)
+    shiftlabel = tk.Label(mainwin, text="Enter shift(up to 25):")  # Create label for shift entry
+    shiftlabel.place(relx=0.5, rely=0.4, anchor=tk.CENTER)  # Place shift label in window
 
-    shift_label = tk.Label(root, text="Enter shift:")
-    shift_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
-
-    validate_shift = root.register(validate_shift_input)
-    entry_shift = tk.Entry(root, width=10, validate="key", validatecommand=(validate_shift, "%S"))
-    entry_shift.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+    validateshift = mainwin.register(validateshiftinput)  # Register function for validating shift input
+    entryshift = tk.Entry(mainwin, width=10, validate="key", validatecommand=(validateshift, "%S"))  # Create entry widget for shift input
+    entryshift.place(relx=0.5, rely=0.5, anchor=tk.CENTER)  # Place shift entry widget in window
 
     # Create buttons for encryption, decryption, reset, and copy
-    encrypt_button = tk.Button(root, text="Encrypt", command=encrypt)
-    encrypt_button.place(relx=0.35, rely=0.6, anchor=tk.CENTER)
+    encryptbutton = tk.Button(mainwin, text="Encrypt", command=encrypt)  # Create button for encryption
+    encryptbutton.place(relx=0.35, rely=0.6, anchor=tk.CENTER)  # Place encryption button in window
 
-    decrypt_button = tk.Button(root, text="Decrypt", command=decrypt)
-    decrypt_button.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+    decryptbutton = tk.Button(mainwin, text="Decrypt", command=decrypt)  # Create button for decryption
+    decryptbutton.place(relx=0.5, rely=0.6, anchor=tk.CENTER)  # Place decryption button in window
 
-    reset_button = tk.Button(root, text="Reset", command=reset)
-    reset_button.place(relx=0.65, rely=0.6, anchor=tk.CENTER)
+    resetbutton = tk.Button(mainwin, text="Reset", command=reset)  # Create button for reset
+    resetbutton.place(relx=0.65, rely=0.6, anchor=tk.CENTER)  # Place reset button in window
 
-    copy_button = tk.Button(root, text="Copy Result", command=copy_result)
-    copy_button.place(relx=0.5, rely=0.7, anchor=tk.CENTER)
+    copybutton = tk.Button(mainwin, text="Copy Result", command=copyresult)  # Create button for copying result
+    copybutton.place(relx=0.5, rely=0.7, anchor=tk.CENTER)  # Place copy button in window
 
     # Label to display result
-    result_label = tk.Label(root, text="")
-    result_label.place(relx=0.5, rely=0.8, anchor=tk.CENTER)
+    resultlabel = tk.Label(mainwin, text="")  # Create label for displaying result
+    resultlabel.place(relx=0.5, rely=0.8, anchor=tk.CENTER)  # Place result label in window
 
-    root.mainloop()
+    mainwin.mainloop()  # Start the main event loop
 
-def caesar_cipher(text, shift):
+def caesarcipher(text, shift):
     """
     Function to perform Caesar Cipher encryption or decryption.
     """
-    result = ""
-    for char in text:
-        if char.isalpha():
-            shifted = ord(char) + shift
-            if char.islower():
-                if shifted > ord('z'):
-                    shifted -= 26
-                elif shifted < ord('a'):
-                    shifted += 26
-            elif char.isupper():
-                if shifted > ord('Z'):
-                    shifted -= 26
-                elif shifted < ord('A'):
-                    shifted += 26
-            result += chr(shifted)
+    result = ""  # Initialize an empty string for the result
+    for char in text:  # Iterate through each character in the text
+        if char.isalpha():  # Check if the character is alphabetic
+            shifted = ord(char) + shift  # Calculate the shifted character's ASCII value
+            if char.islower():  # If the character is lowercase
+                if shifted > ord('z'):  # If the shifted character exceeds 'z'
+                    shifted -= 26  # Wrap around to the beginning of the alphabet
+                elif shifted < ord('a'):  # If the shifted character is less than 'a'
+                    shifted += 26  # Wrap around to the end of the alphabet
+            elif char.isupper():  # If the character is uppercase
+                if shifted > ord('Z'):  # If the shifted character exceeds 'Z'
+                    shifted -= 26  # Wrap around to the beginning of the alphabet
+                elif shifted < ord('A'):  # If the shifted character is less than 'A'
+                    shifted += 26  # Wrap around to the end of the alphabet
+            result += chr(shifted)  # Append the shifted character to the result string
         else:
-            result += char
-    return result
+            result += char  # If the character is not alphabetic, append it to the result string
+    return result  # Return the resulting string
 
 def encrypt():
     """
     Function to encrypt the entered text.
     """
-    plaintext = entry_text.get()
-    shift = int(entry_shift.get())
-    ciphertext = caesar_cipher(plaintext, shift)
-    result_label.config(text="Encrypted Text: " + ciphertext)
+    plaintext = entrytext.get()  # Get the plaintext from the entry widget
+    shift = int(entryshift.get())  # Get the shift value from the entry widget
+    ciphertext = caesarcipher(plaintext, shift)  # Encrypt the plaintext using Caesar Cipher
+    resultlabel.config(text="Encrypted Text: " + ciphertext)  # Update the result label with the encrypted text
 
 def decrypt():
     """
     Function to decrypt the entered text.
     """
-    ciphertext = entry_text.get()
-    shift = -int(entry_shift.get())
-    plaintext = caesar_cipher(ciphertext, shift)
-    result_label.config(text="Decrypted Text: " + plaintext)
+    ciphertext = entrytext.get()  # Get the ciphertext from the entry widget
+    shift = -int(entryshift.get())  # Get the negative shift value from the entry widget for decryption
+    plaintext = caesarcipher(ciphertext, shift)  # Decrypt the ciphertext using Caesar Cipher
+    resultlabel.config(text="Decrypted Text: " + plaintext)  # Update the result label with the decrypted text
 
 def reset():
     """
     Function to reset input fields and result label.
     """
-    entry_text.delete(0, tk.END)
-    entry_shift.delete(0, tk.END)
-    result_label.config(text="")
+    entrytext.delete(0, tk.END)  # Clear the text entry widget
+    entryshift.delete(0, tk.END)  # Clear the shift entry widget
+    resultlabel.config(text="")  # Clear the result label
 
-def copy_result():
+def copyresult():
     """
     Function to copy the result to the clipboard.
     """
-    result = result_label.cget("text")
-    result_text = result.split(": ")[1]
-    root.clipboard_clear()
-    root.clipboard_append(result_text)
-    copy_label.config(text="Result copied to clipboard.")
+    result = resultlabel.cget("text")  # Get the text from the result label
+    resulttext = result.split(": ")[1]  # Extract the result text
+    mainwin.clipboard_clear()  # Clear the clipboard
+    mainwin.clipboard_append(resulttext)  # Append the result text to the clipboard
 
-def validate_shift_input(char):
+def validateshiftinput(char):
     """
     Function to validate input for shift entry field.
     """
-    return char.isdigit() or char == "\b"
+    return char.isdigit() or char == "\b"  # Allow digits and backspace for shift input
 
 # Create Tkinter window for password input
-password_window = tk.Tk()
-password_window.title("Enter Password")
-password_window.geometry("300x100")
+passwordwindow = tk.Tk()  # Create a new Tkinter window for password input
+passwordwindow.title("Enter Password")  # Set window title
+passwordwindow.geometry("300x100") # Sets the window size
+# Set window icon for password window
+password_icon_path = os.path.join(os.path.dirname(__file__), "icon.ico")  # Get the path to the icon file
+passwordwindow.iconbitmap(password_icon_path)  # Set the window icon
 
-password_label = tk.Label(password_window, text="Enter Password:")
-password_label.pack()
+passwordlabel = tk.Label(passwordwindow, text="Enter Password:")  #label for password entry
+passwordlabel.pack()  # Pack password label in window
 
-password_entry = tk.Entry(password_window, show="*")
-password_entry.pack()
+passwordentry = tk.Entry(passwordwindow, show="*")  # Create entry widget for password input
+passwordentry.pack()  # Pack password entry widget in window
 
-authenticate_button = tk.Button(password_window, text="Authenticate", command=authenticate)
-authenticate_button.pack()
+authenticatebutton = tk.Button(passwordwindow, text="Authenticate", command=authenticate)  # Create button for authentication
+authenticatebutton.pack()  # Pack authentication button in window
 
-password_window.mainloop()
+passwordwindow.mainloop()  # Start the main event loop for the password window
